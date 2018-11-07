@@ -110,7 +110,6 @@ class CSP:
         assignments and inferences that took place in previous
         iterations of the loop.
         """
-        # TODO: IMPLEMENT THIS
 
         ## Counters.
         global callCount
@@ -131,21 +130,27 @@ class CSP:
             ## Make a deep copy for each iteration
             copyAssignment = copy.deepcopy(assignment)
 
-            ## 
+            ## Value is not consitent with constraints.
             if value not in self.constraints[name] : 
                 
+                ## Set the domain to the value.
                 copyAssignment[name] = value
 
+                ## Run inference
                 inference = self.inference(copyAssignment, self.get_all_arcs())
 
+                ## If inference succeeds.
                 if inference != False :
 
+                    ## Backtrack on new assignment.
                     result = self.backtrack(copyAssignment)
                     
+                    ## If result exists
                     if result != None :
-                        return result
+                        return result           ## Return partial solution
 
-            copyAssignment[name] = ""
+            ## Clear the domain.
+            copyAssignment[name] = ""       
 
 
         failCount = failCount + 1     
@@ -158,11 +163,14 @@ class CSP:
         in 'assignment' that have not yet been decided, i.e. whose list
         of legal values has a length greater than one.
         """
-        # TODO: IMPLEMENT THIS
         
+        ## Loop over each domain.
         for name in assignment:
+
+            ## If length of domain is greater than 1.
             if len(assignment[name]) > 1:
-                return name
+
+                return name                             ## Return the domain name.
 
 
         return None
@@ -173,19 +181,25 @@ class CSP:
         the lists of legal values for each undecided variable. 'queue'
         is the initial queue of arcs that should be visited.
         """
-        # TODO: IMPLEMENT THIS
+
+        ## Loop til length of queue is 0.
         while len(queue) > 0:
+
+            ## Remove the first element of queue.
             pair = queue.pop(0)
+
+            ## If filtering of domain values succeeded.
             if(self.revise(assignment, pair[0], pair[1])) :
                 
+                ## If no values in domain, failed inference.
                 if len(assignment[pair[0]]) == 0 : 
                     return False
 
+                ## Perform same operations on neighbours.
                 for k in self.get_all_neighboring_arcs(pair[0]):
                     queue.append( k )
 
         return True
-        #self.revise(assignment, 1, 2)
 
     def revise(self, assignment, i, j):
         """The function 'Revise' from the pseudocode in the textbook.
@@ -196,18 +210,26 @@ class CSP:
         between i and j, the value should be deleted from i's list of
         legal values in 'assignment'.
         """
-        # TODO: IMPLEMENT THIS
+
+
         revised = False
+
+        ## Loop through domainI list.
         for x in assignment[i]:
             found = False
-            for y in assignment[j]:
-                if (x,y) in self.constraints[i][j] :
-                    found = True
-                    break
 
-            if found == False:
-                assignment[i].remove(x)
-                revised = True
+            ## Loop through domainJ list.
+            for y in assignment[j]:
+
+                ## If the (x,y) satisfies constraints
+                if (x,y) in self.constraints[i][j] :
+                    found = True                        ## Value pair is consistent with constraints.
+                    break                               ## Stop loop.
+
+            ## If no value pair found in constraints.
+            if found == False:                     
+                assignment[i].remove(x)                 ## Remove the value from the domains list.
+                revised = True                          ## Domain cleaned.
 
         return revised
 
@@ -272,14 +294,14 @@ def print_sudoku_solution(solution):
 
 #import sys
 #sys.setrecursionlimit(1500)
-fileName = "hard.txt"
+fileName = "veryhard.txt"
 csp = create_sudoku_csp(fileName)
 
 print "Puzzle", fileName
 print "--------------------------------"
 print_sudoku_solution(csp.backtracking_search())
 print "--------------------------------"
-print "Backtrack call count", callCount
+print "Backtrack call count:", callCount
 print "--------------------------------"
-print "Backtrack failed", failCount
+print "Backtrack failed:", failCount
 print "--------------------------------"

@@ -1,4 +1,4 @@
-# Sudoku Solver
+# Constraint Satisfaction Problem - Sudoku Solver 
 
 ### To Run
 
